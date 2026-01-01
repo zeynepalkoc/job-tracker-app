@@ -93,9 +93,10 @@ The application is designed to support clarity, not overwhelm.
 
 The following images showcase the application interface and overall structure.
 
-![Board View](assets/board.png)  
-![Stats View](assets/stats.png)  
-![Agent Panel](assets/agent.png)
+![Board View](/src/assets/dashboard.jpeg)
+![Add Job](/src/assets/addjobgenerate.jpeg)  
+![Stats View](/src/assets/stasview.jpeg)  
+![Agent Panel](/src/assets/agentoutput.jpeg)
 
 ---
 
@@ -143,4 +144,5 @@ npm install -D @types/react @types/react-dom
 
 This project is intended as a demo / portfolio showcase
 No real user data is involved
+
 The primary focus is on experience, clarity, and product quality
