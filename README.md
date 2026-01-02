@@ -100,12 +100,6 @@ The following images showcase the application interface and overall structure.
 
 ---
 
-## 🏗️ Overall Structure
-
-The diagram below illustrates the high-level structure of the application.
-
-![Application Architecture](assets/architecture.png)
-
 The structure is intentionally kept:
 - simple
 - readable
@@ -146,3 +140,4 @@ This project is intended as a demo / portfolio showcase
 No real user data is involved
 
 The primary focus is on experience, clarity, and product quality
+
