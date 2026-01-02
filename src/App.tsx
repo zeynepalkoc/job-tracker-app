@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { SpeedInsights } from "@vercel/speed-insights/react";
 import {
   DndContext,
   DragOverlay,
@@ -616,6 +617,8 @@ export default function App() {
       />
 
       <AgentModal open={agentOpen} onClose={() => setAgentOpen(false)} onRun={runAgent} />
+
+      <SpeedInsights />
     </div>
   );
 }
