@@ -64,6 +64,16 @@ export default function JobModal({
     setAiBody("");
   }, [open, initial]);
 
+  // (opsiyonel) modal açıkken body scroll'u kilitle
+  useEffect(() => {
+    if (!open) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [open]);
+
   const canSave = useMemo(() => company.trim() && role.trim(), [company, role]);
 
   if (!open) return null;
@@ -83,7 +93,10 @@ export default function JobModal({
 
   const handleGenerate = () => {
     if (!tempJobForAI.company || !tempJobForAI.role) {
-      toast({ title: "Add company & role first", description: "AI needs at least these two fields." });
+      toast({
+        title: "Add company & role first",
+        description: "AI needs at least these two fields.",
+      });
       return;
     }
     const out = generateFollowUp(tempJobForAI, tone);
@@ -108,53 +121,108 @@ export default function JobModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 grid place-items-center px-4">
-      <div className="absolute inset-0 bg-black/35" onClick={onClose} />
+    // ✅ Dış container artık scroll alıyor (mobil fix)
+    <div className="fixed inset-0 z-50 overflow-y-auto p-4 sm:flex sm:items-center sm:justify-center">
+      {/* Backdrop */}
+      <button
+        aria-label="Close"
+        onClick={onClose}
+        className="fixed inset-0 bg-black/35"
+      />
 
-      <div className="relative w-full max-w-2xl rounded-[28px] border border-zinc-200/80 bg-white/85 backdrop-blur-xl p-5 shadow-[0_30px_110px_-60px_rgba(0,0,0,0.75)]
-                      dark:border-zinc-800/70 dark:bg-zinc-950/75">
+      {/* ✅ Panel: max height + iç scroll */}
+      <div
+        role="dialog"
+        aria-modal="true"
+        className="
+          relative w-full max-w-2xl
+          rounded-[28px]
+          border border-zinc-200/80 bg-white/85 backdrop-blur-xl
+          p-5 shadow-[0_30px_110px_-60px_rgba(0,0,0,0.75)]
+          dark:border-zinc-800/70 dark:bg-zinc-950/75
+          max-h-[calc(100dvh-2rem)] overflow-y-auto
+          overscroll-contain touch-pan-y
+        "
+      >
         <div className="flex items-start justify-between">
           <div>
-            <div className="text-lg font-semibold">{isEdit ? "Edit Job Application" : "Add Job Application"}</div>
-            <div className="text-sm text-zinc-600 dark:text-zinc-400">Save key details and track your application progress in one place.</div>
+            <div className="text-lg font-semibold">
+              {isEdit ? "Edit Job Application" : "Add Job Application"}
+            </div>
+            <div className="text-sm text-zinc-600 dark:text-zinc-400">
+              Save key details and track your application progress in one place.
+            </div>
           </div>
+
           <button
             onClick={onClose}
             className="rounded-xl border border-zinc-200/80 bg-white/70 px-2.5 py-1 text-sm dark:border-zinc-800/70 dark:bg-zinc-950/60"
+            aria-label="Close modal"
           >
-            
+            ✕
           </button>
         </div>
 
         <div className="mt-4 grid gap-4 lg:grid-cols-2">
           <div className="grid gap-3">
             <Row label="Company">
-              <input className={inputCls} value={company} onChange={(e) => setCompany(e.target.value)} placeholder="Company" />
+              <input
+                className={inputCls}
+                value={company}
+                onChange={(e) => setCompany(e.target.value)}
+                placeholder="Company"
+              />
             </Row>
 
             <Row label="Role">
-              <input className={inputCls} value={role} onChange={(e) => setRole(e.target.value)}  placeholder="Job title(e.g. Frontend Developer)"/>
+              <input
+                className={inputCls}
+                value={role}
+                onChange={(e) => setRole(e.target.value)}
+                placeholder="Job title(e.g. Frontend Developer)"
+              />
             </Row>
 
             <Row label="Location">
-              <input className={inputCls} value={location} onChange={(e) => setLocation(e.target.value)}placeholder="City or Remote" />
+              <input
+                className={inputCls}
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                placeholder="City or Remote"
+              />
             </Row>
 
             <Row label="Job Link">
-              <input className={inputCls} value={link} onChange={(e) => setLink(e.target.value)} placeholder="https://company.com/careers/…" />
+              <input
+                className={inputCls}
+                value={link}
+                onChange={(e) => setLink(e.target.value)}
+                placeholder="https://company.com/careers/…"
+              />
             </Row>
 
             <div className="grid gap-3 sm:grid-cols-2">
               <Row label="Status">
-                <select className={inputCls} value={status} onChange={(e) => setStatus(e.target.value as Status)}>
+                <select
+                  className={inputCls}
+                  value={status}
+                  onChange={(e) => setStatus(e.target.value as Status)}
+                >
                   {STATUSES.map((s) => (
-                    <option key={s} value={s}>{s}</option>
+                    <option key={s} value={s}>
+                      {s}
+                    </option>
                   ))}
                 </select>
               </Row>
 
               <Row label="Follow-up Date">
-                <input className={inputCls} type="date" value={followUp} onChange={(e) => setFollowUp(e.target.value)} />
+                <input
+                  className={inputCls}
+                  type="date"
+                  value={followUp}
+                  onChange={(e) => setFollowUp(e.target.value)}
+                />
               </Row>
             </div>
 
@@ -175,17 +243,21 @@ export default function JobModal({
               <div>
                 <div className="font-semibold">Follow-up Message Generator</div>
                 <div className="text-xs text-zinc-600 dark:text-zinc-400">
-               Create a clear, professional follow-up message using your application details.
+                  Create a clear, professional follow-up message using your application details.
                 </div>
               </div>
               <span className="rounded-full border border-indigo-200/70 bg-indigo-50 px-2.5 py-1 text-[11px] font-semibold text-indigo-700 dark:border-indigo-900/60 dark:bg-indigo-950/35 dark:text-indigo-200">
-                Demo 
+                Demo
               </span>
             </div>
 
             <div className="mt-4 grid gap-3">
               <Row label="Tone">
-                <select className={inputCls} value={tone} onChange={(e) => setTone(e.target.value as Tone)}>
+                <select
+                  className={inputCls}
+                  value={tone}
+                  onChange={(e) => setTone(e.target.value as Tone)}
+                >
                   <option value="Professional">Professional</option>
                   <option value="Friendly">Friendly</option>
                   <option value="Short">Short</option>
@@ -213,7 +285,9 @@ export default function JobModal({
 
               <div className="mt-1 rounded-2xl border border-zinc-200/70 bg-white/60 dark:border-zinc-800/70 dark:bg-zinc-950/50 p-3">
                 <div className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">Subject</div>
-                <div className="mt-1 text-sm text-zinc-700 dark:text-zinc-300 break-words">{aiSubject || "—"}</div>
+                <div className="mt-1 text-sm text-zinc-700 dark:text-zinc-300 break-words">
+                  {aiSubject || "—"}
+                </div>
 
                 <div className="mt-3 text-xs font-semibold text-zinc-700 dark:text-zinc-300">Message</div>
                 <div className="mt-1 whitespace-pre-wrap text-sm text-zinc-700 dark:text-zinc-300">
@@ -222,7 +296,7 @@ export default function JobModal({
               </div>
 
               <div className="text-[11px] text-zinc-500 dark:text-zinc-400">
-               Tip: Personalize with the recruiter’s name before sending.
+                Tip: Personalize with the recruiter’s name before sending.
               </div>
             </div>
           </div>
